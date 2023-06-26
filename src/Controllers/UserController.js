@@ -6,41 +6,15 @@ const jwt = require('jsonwebtoken')
 
 class UserController {
     
-    async check(req, res) {
-
-        const authHeader = req.headers['authorization']
-
-        const token = authHeader && authHeader.split(" ")[1]
-
-        if(!token) {
-            return res.status(401).json({ msg: "Acesso negado!" })
-        }
-
-        // checkToken(req, res)
-
-        const id = req.params.id;
-        
-
-        try { 
-            const secret = process.env.SECRET
-
-            jwt.verify(token, secret)
-    
-            
-            const user = await UserModel.findById(id, '-password');
-
-            if (!user) {
-                return res.status(404).json({ msg: 'Usuário não encontrado!' });
-            }
-
-            res.status(200).json({ user, token });
-        } catch (error) {
-            res.status(500).json({ msg: 'Aconteceu um erro no servidor, tente novamente mais tarde' });
-        }
-    }
-
+   
     async store(req, res){
-        const {nome, email, password, confirmpassword } = req.body
+        const {
+            nome, nomeCompleto, email, password,
+            cpf_cnpj, telefone, chavePix, cep,
+            imagemUsuario, rua, numero, cidade,
+            bairro, estado, complemento
+        } = req.body
+
         //validations
         if(!nome) {
             return res.status(422).json({msg: 'O nome é obrigatório!'})
@@ -51,9 +25,6 @@ class UserController {
 
         if(!password) {
             return res.status(422).json({msg: 'A senha é obrigatória!'})
-        }
-        if(password !== confirmpassword) {
-            return res.status(422).json({ msg: 'As senhas não conferem!' })
         }
 
         //check if user exists
@@ -68,15 +39,11 @@ class UserController {
         const passwordHash = await bcrypt.hash(password, salt)
 
         //create user
-        const user = new UserModel({
-            nome, 
-            email,
-            password: passwordHash,
-        })
+        const user = await UserModel.create(req.body);
 
         try {
             await user.save()
-            res.status(201).json({ msg: 'Usuário criado com sucesso!'})
+            res.status(201).json({ msg: 'Usuário criado com sucesso!', user})
         } catch(error) {
             console.log(error)
             res
@@ -86,6 +53,38 @@ class UserController {
             })
         }
 
+    }
+
+    async check(req, res) {
+
+        const authHeader = req.headers['authorization']
+
+        const token = authHeader && authHeader.split(" ")[1]
+
+        if(!token) {
+            return res.status(401).json({ msg: "Acesso negado!" })
+        }
+
+        // checkToken(req, res)
+        
+        try { 
+            const { id } = req.params;
+
+            const secret = 'criandoHashDoidaPraFortalecerOToken123123'
+
+            jwt.verify(token, secret)
+    
+            
+            const user = await UserModel.findById(id, "-password");
+
+            if (!user) {
+                return res.status(404).json({ msg: 'Usuário não encontrado!' });
+            }
+
+            return res.status(200).json(user);
+        } catch (error) {
+            return res.status(500).json({ msg: 'Aconteceu um erro no servidor, tente novamente mais tarde' });
+        }
     }
 
     async login(req, res){
@@ -117,7 +116,7 @@ class UserController {
     
         try {
     
-            const secret = process.env.SECRET
+            const secret = 'criandoHashDoidaPraFortalecerOToken123123'
     
             const token = jwt.sign(
                 {
@@ -173,6 +172,7 @@ class UserController {
             return res.status(404).json({message:"Falha ao deletar"});
         }
     }
+
 }
 
 module.exports = new UserController();

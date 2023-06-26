@@ -5,21 +5,21 @@ const ObjectId = Schema.ObjectId;
 
 const ProductSchema = new Schema({
     id: ObjectId,
+    id_dono: String,
     nome: String,
     preco: Number,
     precoAnterior: Number,
+    quantidade: Number,
     descricao: String,
     imagem: String,
-    descricao_tamanho: String,
-    descricao_chave: {
+    tamanho: String,
+    peso: Number,
     marca: String,
+    modelo: String,
     fabricante: String,
-    Modelo: String,
-    Número_da_peça: String,
-    peso_do_produto: Number,
-    padrao_de_conexão: String,
-    características_especiais: String
-      }
+    numeracao: String,
+    caracteristicas: String
+    
 });
 
 const ProductModel = mongoose.model('produto', ProductSchema);

@@ -3,12 +3,10 @@ const ProductModel = require('../Models/ProductModel');
 class ProductController {
     async store(req, res){
         const { 
-            nome, preco, precoAnterior, descricao, imagem,
-            descricao_tamanho, descricao_chave: {
-            marca, fabricante, Modelo,
-            Número_da_peça, peso_do_produto, padrao_de_conexão,
-            características_especiais,
-              }
+            id_dono, nome, preco, precoAnterior, quantidade, descricao, 
+            imagem, tamanho, peso,
+            marca, modelo, fabricante,
+            numeracao, caracteristicas
         } = req.body;
         
         const productAlreadyExists = await ProductModel.findOne({nome});
@@ -17,8 +15,8 @@ class ProductController {
             return res.status(400).json({message:"O nome do produto já existe!"});
         }
         
-        if(!nome || !preco || !precoAnterior){
-            return res.status(400).json({message:"Nome, Preço e PreçoAnterior requeridos !"})
+        if(!id_dono || !nome || !preco){
+            return res.status(400).json({message:"id do dono, Nome, Preço requeridos !"})
         }
         const createdProdutc = await ProductModel.create(req.body);
 
