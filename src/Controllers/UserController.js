@@ -37,6 +37,7 @@ class UserController {
         //create password
         const salt = await bcrypt.genSalt(12)
         const passwordHash = await bcrypt.hash(password, salt)
+        req.body.password = passwordHash
 
         //create user
         const user = await UserModel.create(req.body);
